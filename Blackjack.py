@@ -1,9 +1,10 @@
 import random
+import db
 
 def createDeck():
     suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
     ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-    pointValues = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+    pointValues = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
     deck = []
 
     cardCounter = 0
@@ -25,86 +26,131 @@ def dealCard(deck):
 
 
 def checkForAce(card, user, score):
-    if (dealtCard[1] == "Ace") and (score <= 10):
+    if (card[1] == "Ace") and (score <= 10):
         if (user == "player"):
             aceChoice = int(input("\nYou were dealt an ace. 1 or 11?: "))
             if (aceChoice == 1):
-                dealtCard[2] = 1
+                card[2] = 1
             elif (aceChoice == 11):
-                dealtCard[2] = 11
+                card[2] = 11
         elif (user == "dealer"):
             card[2] = 11
+
+def processCardDeal(hand, deckOfCards, user, points):
+    dealtCard = dealCard(deckOfCards)
+    checkForAce(dealtCard, user, points)
+    points += dealtCard[2]
+    hand.append(dealtCard)
+    return points
+
+def showHand(hand, user):
+    if(user == "player"):
+        print("\nYOUR CARDS")
+    elif(user == "dealer"):
+        print("\nDEALER'S CARDS")
+
+    for card in hand:
+        print(card[1] + " of " + card[0])
+
+def displayTitle():
+    print("BLACKJACK!")
+    print("Blackjack payout is 3:2")
 
 def main():
 
     playAgain ="y"
     
     while(playAgain == "y"):
+        displayTitle()
+        fileName = "money.txt"
+        
+        money = db.importFile(fileName)
+
+        print("\nMoney: " + str(money))
+        betAmount = float(input("Bet amount: "))
+
+        money = db.processBet(money, betAmount, fileName)
+        
         deckOfCards = createDeck()
-
-        print("Cards in a deck:")
-
-        #for card in deckOfCards:
-        #    print(card[1] + " of " + card[0] + ". Value of: " + str(card[2]) + ".")
-
-        print("\nThere are " + str(len(deckOfCards)) + " cards in the deck.")
-
-        turnCounter = 1
 
         playerPoints = 0
         dealerPoints = 0
         playerHand = []
         dealerHand = []
+
+        user = "player"
+        playerPoints = processCardDeal(playerHand, deckOfCards, user, playerPoints)
+        
         user = "dealer"
-        hitOrStand = "hit"
+        dealerPoints = processCardDeal(dealerHand, deckOfCards, user, dealerPoints)
 
-        dealtCard = dealCard(deckOfCards)
+        print("\nDEALER'S SHOW CARD:")
+        print(dealerHand[0][1] + " of " + dealerHand[0][0])
 
-        checkForAce(dealtCard, user, dealerPoints)
+        user = "player"
+        playerPoints = processCardDeal(playerHand, deckOfCards, user, playerPoints)
 
-        dealerPoints += dealtCard[2]
-
-        dealerHand.append(dealtCard)
-
-        print("DEALER's SHOW CARD:")
-        print(dealtCard[1] + " of " + dealtCard[0])
+        user = "dealer"
+        dealerPoints = processCardDeal(dealerHand, deckOfCards, user, dealerPoints)
         
         user = "player"
+        showHand(playerHand, user)
+        hitOrStand = input("\nHit or stand? (hit/stand): ")
+        
+        #while loop to handle player's turn
         while (playerPoints <= 21) and (hitOrStand.lower() == "hit"):
-            dealtCard = dealCard(deckOfCards)
-
-            #check for ace
-            checkForAce(dealtCard, user, userPoints)
-
-            playerHand.append(dealtCard)
+            playerPoints = processCardDeal(playerHand, deckOfCards, user, playerPoints)
                 
-            print("\nYour Hand:")
-            playerPoints += dealtCard[2]
-            #print("\nThere are " + str(len(deckOfCards)) + " cards in the deck.")
-            for card in playerHand:
-                #print(card[1] + " of " + card[0] + ". Value of: " + str(card[2]) + ".")
-                print(card[1] + " of " + card[0])
+            showHand(playerHand, user)
 
-            print("\nYour points: " + str(points))
-            turnCounter += 1
             if (playerPoints >= 21):
                 break
 
+            hitOrStand = input("\nHit or stand? (hit/stand): ")
 
-            hitOrStand = input("Hit or stand? (hit/stand): ")
+        user = "dealer"
+        while((dealerPoints <= 17) and (playerPoints <= 21)):
+            dealerPoints = processCardDeal(dealerHand, deckOfCards, user, dealerPoints)
+
+
+        showHand(dealerHand, user)
                 
-        if (playerPoints <= 21):
-            if (playerPoints > dealerPoints):
+        print("\nYOUR POINTS:     " + str(playerPoints))
+        print("DEALER'S POINTS: " + str(dealerPoints))
+
+        if (playerPoints <=21):
+            if((playerPoints > dealerPoints) or (dealerPoints > 21)):
                 print("\nYou win.")
-            elif (playerPoints = dealerPoints):
-                print("\nIt's a draw.")
-            else:
-                print("\nYou lose.")
+                money = db.processWin(money, betAmount, fileName)
+            elif(playerPoints == dealerPoints):
+                print("\nIt's a draw!")
+                money = db.processTie(money, betAmount, fileName)
+            elif (dealerPoints > playerPoints):
+                print("\nSorry. You lose.")
         else:
-            print("\nYou lose.")
+            print("\nSorry. You lose.")
+
+#        if (playerPoints <= 21) and (dealerPoints <= 21):
+#            if (playerPoints > dealerPoints):
+#                print("\nYou win.")
+#                money = db.processWin(money, betAmount, fileName)
+#            elif (playerPoints == dealerPoints):
+#                print("\nIt's a draw.")
+#            else:
+#                print("\nYou lose.")
+#        elif (playerPoints <= 21) and (dealerPoints > 21):
+#            print("\nYou win.")
+#            money = db.processWin(money, betAmount, fileName)
+#        else:
+#            print("\nYou lose.")
+
+        print("Money: " + str(money))
 
         playAgain = input("\nPlay again? (y/n): ")
-    
+        print()
+
+    print("Come back soon!")
+    print("Bye!")
 
 if __name__ == "__main__":
     main()
