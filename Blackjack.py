@@ -59,16 +59,49 @@ def displayTitle():
 def main():
 
     playAgain ="y"
+    newBet = "y"
+    addFunds = "y"
     
     while(playAgain == "y"):
         displayTitle()
         fileName = "money.txt"
         
         money = db.importFile(fileName)
-
+        if (money < 5):
+            addFunds = input("\nYour account currently has less than the required $5 to play. Would you like to add additional funds (y/n)?: ")
+            if (addFunds.lower() == "y"):
+                money = db.addMoney(money, fileName)
+            else:
+                break
+            
         print("\nMoney: " + str(money))
         betAmount = float(input("Bet amount: "))
 
+        while ((betAmount < 5) or (betAmount > 1000)):
+            print("\nError, invalid bet amount. Please select an amount between 5 and 1000.")
+            print("\nMoney: " + str(money))
+            betAmount = float(input("Bet amount: "))
+
+        while (betAmount > money):
+            addFunds = input("\nError. Your account currently has less funds than the bet amount. Would you like to add additional funds (y/n)?: ")
+            if (addFunds.lower() == "y"):
+                money = db.addMoney(money, fileName)
+            else:
+                newBet = input("Would you like to make a different bet (y/n)?: ")
+                if (newBet.lower() == "y"):
+                    print("\nMoney: " + str(money))
+                    betAmount = float(input("Bet amount: "))
+
+                    while ((betAmount < 5) or (betAmount > 1000)):
+                        print("Error, invalid bet amount. Please select an amount between 5 and 1000.")
+                        print("\nMoney: " + str(money))
+                        betAmount = float(input("Bet amount: "))
+                else:
+                    break
+
+        if ((newBet.lower() != "y") and (addFunds.lower() != "y") and (betAmount > money)):
+            break
+        
         money = db.processBet(money, betAmount, fileName)
         
         deckOfCards = createDeck()
@@ -148,7 +181,7 @@ def main():
 
         playAgain = input("\nPlay again? (y/n): ")
         print()
-
+        
     print("Come back soon!")
     print("Bye!")
 

@@ -25,6 +25,11 @@ def processTie(money, betAmount, fileName):
     saveFile(money, fileName)
     return money
 
+def addMoney(money, fileName):
+    money += float(input("\nAmount to add: "))
+    saveFile(money, fileName)
+    return money
+
 #def saveFile(money, fileName):
 #    with open(fileName, "w") as file:
 #        for item in money:
