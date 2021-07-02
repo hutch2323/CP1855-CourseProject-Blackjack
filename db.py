@@ -67,8 +67,6 @@ def validateBet(money, betAmount):
     else:
         return True
 
-    
-
 #def saveFile(money, fileName):
 #    with open(fileName, "w") as file:
 #        for item in money:

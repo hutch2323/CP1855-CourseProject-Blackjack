@@ -10,11 +10,13 @@ def main():
     playAgain ="y"
     newBet = "y"
     addFunds = "y"
+
     isValidBet = True
     
     while(playAgain == "y"):
         displayTitle()
         
+
         money = db.importFile()
         if (money < 5):
             addFunds = input("\nYour account currently has less than the required $5 to play. Would you like to add additional funds (y/n)?: ")
@@ -25,6 +27,7 @@ def main():
             
         print("\nMoney: " + str(money))
         betAmount = float(input("Bet amount: "))
+
 
         isValidBet = db.validateBet(money, betAmount)
 
