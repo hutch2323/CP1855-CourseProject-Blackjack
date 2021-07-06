@@ -32,11 +32,11 @@ def main():
                     print("Unexpected error has occured!")
                     print(type(e), e)
                     db.exitProgram()
-
                 break
             isValidBet = db.validateBet(money, betAmount)
         else:
             break    
+
 
         if (isValidBet == True):
             money = db.updateBalance()
