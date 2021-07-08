@@ -31,6 +31,7 @@ def main():
         if (db.checkForMinimumBalance(money) == True):
             # Update the money variable to reflect changes
             money = db.updateBalance()
+
             print("\n################################")
             print("Money 1: " + str(money))
             
@@ -39,9 +40,11 @@ def main():
 
             # Check to see if the bet is valid
             betAmount = db.validateBet(money, betAmount)
+
         else:
             # If the minimum balance is less than 5 and user doesn't add more money, end the game
             break
+
 
 
         # If the user places a valid bet:
@@ -52,6 +55,8 @@ def main():
             print("After Bet: " + str(db.updateBalance()))
             print("Original Bet Amount: " + str(betAmount))
             
+
+
             money = db.updateBalance()
             print("Updated Bet Amount: " + str(betAmount))
             print("################################")
