@@ -1,10 +1,14 @@
 import random
 import db
 
+"""
+This module handles all the card related functions for the blackjack game.
+"""
+
 def createDeck():
     suits = ["Hearts", "Diamonds", "Spades", "Clubs"]
-    ranks = ["Ace", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King"]
-    pointValues = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10]
+    ranks = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+    pointValues = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11]
     deck = []
 
     cardCounter = 0
@@ -102,9 +106,9 @@ def determineResult(playerPoints, dealerPoints, money, betAmount):
 
 def showHand(hand, user):
     if(user == "player"):
-        print("\nYOUR CARDS")
+        print("\nYOUR CARDS:")
     elif(user == "dealer"):
-        print("\nDEALER'S CARDS")
+        print("\nDEALER'S CARDS:")
 
     for card in hand:
         print(card[1] + " of " + card[0])
