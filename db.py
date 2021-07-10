@@ -39,20 +39,28 @@ def getUserBet(money):
 
 # This function checks to see if the user's balance (money parameter) is greater than or equal to 5. If balance is less than 5, user prompted to add additional funds to account.
 def checkForMinimumBalance(money):
+
+    # variable that holds whether or not the balance has the minimum amount required to continue. Will be 0 if < minimum, will be 1 if >= minimum.
+    isMinimumBalance = 0
+
+    # Tuple will return a boolean (true/false) as well as the current value of money
+    #balanceValidation = (isMinimumBalance, money)
+    
     while (money < 5):
         addFunds = input("\nYour account ($" + str(money) + ") currently has less than the required $5 to play.\n" +
                              "Would you like to add additional funds (y/n)?: ")
-        # If the user wants to add more money to their account, call the addMoney() function. Otherwise, return False.
+        # If the user wants to add more money to their account, call the addMoney() function. Otherwise, set isMinimumBalance to 0 (false) and return the tuple
         if (addFunds.lower() == "y"):
             money = addMoney(money)
             continue
         else:
             print()
-            return False
+            isMinimumBalance = 0
+            return isMinimumBalance, money
 
-    # If the minimum balance is achieved, return True
-    return True
-
+    # If the minimum balance is achieved, set isMinimumBalance to 1 (true) and return the tuple of isMinimumBalance and money
+    isMinimumBalance = 1
+    return isMinimumBalance, money
 
 # Function that takes the current balance (money) as a parameter and updates the file
 def saveFile(money):
@@ -88,17 +96,11 @@ def importFile():
 
     return float(money)
 
-
-# Calls importFile() function and returns the money value
-def updateBalance():
-    money = importFile()
-    return money
-
-
 # Function that processes the user's bet. Takes the current balance and betAmount as parameters, removes the bet amount, then updates the file holding the balance
 def processBet(money, betAmount):
     money -= betAmount
     saveFile(money)
+    return money
 
 
 # Function that processes a user win. Takes current balance and bet amount as parameters, and adds the betAmount * 3/2 (betting odds) to the balance. Then calls saveFile()
@@ -117,7 +119,7 @@ def processTie(money, betAmount):
 
 # Function used to handle user adding money to their account balance. Takes the current balance as a parameter, adds the requsted amount, saves the file, and returns new balance (money)
 def addMoney(money):
-    # Prompts user for an amount to add and validates the value
+    # Prompts user for an amount of money to add and validates the value
     while True:
         try:
             amountToAdd = float(input("\nAmount to add: "))
@@ -137,10 +139,6 @@ def addMoney(money):
     money += amountToAdd
     saveFile(money)
     return money
-
-
-def changeBetAmount(money):
-    pass
     
 
 # Function used to validate the user's bet. Takes the balance (money) and the betAmount as parameters. Will return the bet amount (0 if the bet is cancelled)
@@ -149,9 +147,11 @@ def validateBet(money, betAmount):
     newBet = "n"
     addFunds = "n"
 
+    # While loop that will execute until broken/return statement
     while True:
+        # If current money is greater than or equal to betAmount, validate and return the resultant tuple
         if (money >= betAmount):
-            return betAmount
+            return money, betAmount
 
         # While loop used to check if the bet requested exceeds the account balance (money)
         while (betAmount > money):   
@@ -165,25 +165,24 @@ def validateBet(money, betAmount):
                 # If user doesn't want to add more money, ask if they would like to place a different bet
                 newBet = input("\nWould you like to make a different bet (y/n)?: ")
                 if (newBet.lower() == "y"):
-                    # While loop to handle bet validation
-                    #while True:
-                        # Call getUserBet() function and assign returned value to betAmount variable
+                    # Call getUserBet() function and assign returned value to betAmount variable
                     betAmount = getUserBet(money)
-                  
                     continue
                 else:
+                    # If user doesn't want to add more funds and declines to make a new bet, set bet to 0 and return the resultant tuple
                     betAmount = 0
-                    return betAmount
+                    return money, betAmount
 
-
+            # If the user decides to add more funds (money) and decides to change their previous bet
             if(addFunds.lower() == "y") and (newBet.lower() != "y"):
                 confirmBet = "n"
                 print("\nMoney: " + str(money))
                 print("Bet Amount: " + str(betAmount))
                 confirmBet = input("Confirm bet (y/n)?: ")
 
+                # if the bet is confirmed, return the tuple of money and betAmount
                 if (confirmBet == "y"):
-                    return betAmount
+                    return money, betAmount
                 else:
                     # If user doesn't want to add more money, ask if they would like to place a different bet
                     newBet = input("\nWould you like to make a different bet (y/n)?: ")
@@ -193,11 +192,12 @@ def validateBet(money, betAmount):
                       
                         continue
                     else:
+                        # If user doesn't want to place a new bet, set the betAmount to 0 and return the resultant tuple
                         betAmount = 0
-                        return betAmount
+                        return money, betAmount
 
-        # If the user's bet is more than the current balance (money), user declines to add additional funds, and declines to place a new bet, return False
+        # If the user's bet is more than the current balance (money), user declines to add additional funds, and declines to place a new bet, return the resultant tuple
         if ((newBet.lower() != "y") and (addFunds.lower() != "y") and (betAmount > money)):
             betAmount = 0
-            return betAmount
+            return money, betAmount
     
