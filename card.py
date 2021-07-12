@@ -90,8 +90,15 @@ def processTurn(hand, deck, user, playerPoints, dealerPoints):
     if (user == "player"):
         # Show player's hand
         showHand(hand, user)
-        # Ask player if they would like to hit (add more cards) or stand (no more cards)
-        hitOrStand = input("\nHit or stand? (hit/stand): ")
+
+        while True:
+            # Ask player if they would like to hit (add more cards) or stand (no more cards)
+            hitOrStand = input("\nHit or stand? (hit/stand): ")
+            if (hitOrStand.lower() != "hit") and (hitOrStand.lower() != "stand"):
+                print("Invalid input. Try again!")
+                continue
+            else:
+                break
 
         #while loop to handle player's turn. Will continue until the player's score is <= 21 or the player "hits" for more cards
         while (playerPoints <= 21) and (hitOrStand.lower() == "hit"):
@@ -128,18 +135,28 @@ def determineResult(playerPoints, dealerPoints, money, betAmount):
     if (playerPoints <=21):
             # If the player's points are greater than the dealer's points or the dealer has busted, player wins
             if((playerPoints > dealerPoints) or (dealerPoints > 21)):
-                print("\nYou win.")
+                if (playerPoints == 21):
+                    print("\nBlackjack! You win!")
+                else:
+                    print("\nYou win.")
                 # update the account balance (money) by calling the processWin function from db.py
                 money = db.processWin(money, betAmount)
             elif(playerPoints == dealerPoints):
-                print("\nIt's a draw!")
+                # Since playerPoints and dealerPoints are equal, only need to check one condition for 21
+                if (playerPoints == 21):
+                    print("\nPlayer & Dealer have Blackjack! It's a draw!")
+                else:   
+                    print("\nIt's a draw!")
                 # update the account balance (money) by calling the processTie function from db.py
                 money = db.processTie(money, betAmount)
             elif (dealerPoints > playerPoints):
                 # if dealer has more points and neither has busted, player loses
-                print("\nSorry. You lose.")
+                if (dealerPoints == 21):
+                    print("\nSorry, the dealer has Blackjack! You lose!")
+                else:
+                    print("\nSorry. You lose.")
     else: #If player has busted or the dealerPoints are greater than the player's points, player loses
-        print("\nSorry. You lose.")
+        print("\nBusted! You lose.")
 
     return money
 
