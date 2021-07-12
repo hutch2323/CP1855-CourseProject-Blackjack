@@ -43,20 +43,22 @@ def checkForMinimumBalance(money):
     # variable that holds whether or not the balance has the minimum amount required to continue. Will be 0 if < minimum, will be 1 if >= minimum.
     isMinimumBalance = 0
 
-    # Tuple will return a boolean (true/false) as well as the current value of money
-    #balanceValidation = (isMinimumBalance, money)
-    
+    # While loop that ensures the game will not continue while the account balance is less than 5
     while (money < 5):
-        addFunds = input("\nYour account ($" + str(money) + ") currently has less than the required $5 to play.\n" +
-                             "Would you like to add additional funds (y/n)?: ")
-        # If the user wants to add more money to their account, call the addMoney() function. Otherwise, set isMinimumBalance to 0 (false) and return the tuple
-        if (addFunds.lower() == "y"):
-            money = addMoney(money)
-            continue
-        else:
-            print()
-            isMinimumBalance = 0
-            return isMinimumBalance, money
+        while True:
+            addFunds = input("\nYour account ($" + str(money) + ") currently has less than the required $5 to play.\n" +
+                                 "Would you like to add additional funds (y/n)?: ")
+
+            # If the user wants to add more money to their account, call the addMoney() function. Otherwise, set isMinimumBalance to 0 (false) and return the tuple
+            if (addFunds.lower() == "y"):
+                money = addMoney(money)
+                break
+            elif (addFunds.lower() == "n"):
+                print()
+                isMinimumBalance = 0
+                return isMinimumBalance, money
+            else:
+                print("Invalid input. Try again!")
 
     # If the minimum balance is achieved, set isMinimumBalance to 1 (true) and return the tuple of isMinimumBalance and money
     isMinimumBalance = 1
@@ -151,53 +153,75 @@ def validateBet(money, betAmount):
     while True:
         # If current money is greater than or equal to betAmount, validate and return the resultant tuple
         if (money >= betAmount):
-            return money, betAmount
+            betAmount = confirmBet(money, betAmount)
+            if (money >= betAmount):
+                return money, betAmount
+            else:
+                continue
 
         # While loop used to check if the bet requested exceeds the account balance (money)
-        while (betAmount > money):   
-            addFunds = input("\nError. Your account ($" + str(money) + ") currently has less funds than the bet amount.\n" +
-                             "Would you like to add additional funds (y/n)?: ")
-            # If bet amount exceeds money available, ask user if they would like to add funds to their account
-            if (addFunds.lower() == "y"):
-                    # Call addMoney() function and update money variable with new balance
-                    money = addMoney(money)                
-            else:
-                # If user doesn't want to add more money, ask if they would like to place a different bet
-                newBet = input("\nWould you like to make a different bet (y/n)?: ")
-                if (newBet.lower() == "y"):
-                    # Call getUserBet() function and assign returned value to betAmount variable
-                    betAmount = getUserBet(money)
-                    continue
+        while (betAmount > money):
+            while True:
+                addFunds = input("\nError. Your account ($" + str(money) + ") currently has less funds than the bet amount.\n" +
+                                 "Would you like to add additional funds (y/n)?: ")
+                # If bet amount exceeds money available, ask user if they would like to add funds to their account
+                if (addFunds.lower() == "y"):
+                        # Call addMoney() function and update money variable with new balance
+                        money = addMoney(money)
+                        print("\nMoney: " + str(money))
+                        print("Bet amount: " + str(betAmount))
+                        break
+                elif (addFunds.lower() == "n"):
+                    while True:
+                        # If user doesn't want to add more money, ask if they would like to place a different bet
+                        newBet = input("\nWould you like to make a different bet (y/n)?: ")
+                        if (newBet.lower() == "y"):
+                            # Call getUserBet() function and assign returned value to betAmount variable
+                            betAmount = getUserBet(money)
+                            break
+                        elif (newBet.lower() == "n"):
+                            # If user doesn't want to add more funds and declines to make a new bet, set bet to 0 and return the resultant tuple
+                            betAmount = 0
+                            return money, betAmount
+                        else:
+                            print("Invalid input. Try again!")
+                    break
                 else:
-                    # If user doesn't want to add more funds and declines to make a new bet, set bet to 0 and return the resultant tuple
-                    betAmount = 0
-                    return money, betAmount
-
-            # If the user decides to add more funds (money) and decides to change their previous bet
-            if(addFunds.lower() == "y") and (newBet.lower() != "y"):
-                confirmBet = "n"
-                print("\nMoney: " + str(money))
-                print("Bet Amount: " + str(betAmount))
-                confirmBet = input("Confirm bet (y/n)?: ")
-
-                # if the bet is confirmed, return the tuple of money and betAmount
-                if (confirmBet == "y"):
-                    return money, betAmount
-                else:
-                    # If user doesn't want to add more money, ask if they would like to place a different bet
-                    newBet = input("\nWould you like to make a different bet (y/n)?: ")
-                    if (newBet.lower() == "y"):
-                        # Call getUserBet() function and assign returned value to betAmount variable
-                        betAmount = getUserBet(money)
-                      
-                        continue
-                    else:
-                        # If user doesn't want to place a new bet, set the betAmount to 0 and return the resultant tuple
-                        betAmount = 0
-                        return money, betAmount
+                    print("Invalid input. Try again!")
 
         # If the user's bet is more than the current balance (money), user declines to add additional funds, and declines to place a new bet, return the resultant tuple
         if ((newBet.lower() != "y") and (addFunds.lower() != "y") and (betAmount > money)):
             betAmount = 0
             return money, betAmount
     
+
+# Function used to confirm the user's bet
+def confirmBet(money, betAmount):
+    confirmBet = "n"
+
+    while True:
+        confirmBet = input("\nConfirm bet (y/n)?: ")
+
+        # if the bet is confirmed, return the tuple of money and betAmount
+        if (confirmBet.lower() == "y"):
+            break
+        elif (confirmBet.lower() == "n"):
+            while True:
+                # Ask user if they would like to place a different bet
+                newBet = input("\nWould you like to make a different bet (y/n)?: ")
+                if (newBet.lower() == "y"):
+                    # Call getUserBet() function and assign returned value to betAmount variable
+                    betAmount = getUserBet(money)
+                    break
+                elif (newBet.lower() == "n"):
+                    # If user doesn't want to place a new bet, set the betAmount to 0 and return the resultant tuple
+                    betAmount = 0
+                    return betAmount
+                else:
+                    print("Invalid input. Try again!")
+                                
+        else:
+            print("Invalid input. Try again!")
+            
+
+    return betAmount

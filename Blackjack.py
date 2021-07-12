@@ -68,7 +68,7 @@ def userBet(money):
         return money, betAmount
 
     # If the user places a valid bet (validated from validateBet and >0):
-    if (betAmount > 0):            
+    if (betAmount > 0):
         money = db.processBet(money, betAmount)
         displayBetSlip(money, betAmount)
         return money, betAmount
@@ -122,13 +122,19 @@ def main():
         betAmount = betResult[1]
 
         # Check to see if the deck should be reshuffled before the turn begins. Will only reshuffle if less than half of original deck remaining
-        deckOfCards = card.checkForReshuffle(deckOfCards)
+        card.checkForReshuffle(deckOfCards)
 
         # Initiate the Blackjack game
         playBlackjack(deckOfCards, money, betAmount)
 
         # Ask user whether or not they would like to play again
-        playAgain = input("\nPlay again? (y/n): ")
+        while True:
+            playAgain = input("\nPlay again? (y/n): ")
+            if (playAgain.lower() != "y") and (playAgain.lower() != "n"):
+                print("Invalid input. Try again!")
+                continue
+            else:
+                break
         print()
 
         
