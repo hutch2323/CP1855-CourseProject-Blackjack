@@ -1,3 +1,7 @@
+# CP1855 - Course Project
+# Marcus Hutchings - 20048535
+# July 14, 2021
+
 import sys
 
 """
@@ -54,7 +58,6 @@ def checkForMinimumBalance(money):
                 money = addMoney(money)
                 break
             elif (addFunds.lower() == "n"):
-                print()
                 isMinimumBalance = 0
                 return isMinimumBalance, money
             else:
@@ -195,14 +198,14 @@ def validateBet(money, betAmount):
             return money, betAmount
     
 
-# Function used to confirm the user's bet
+# Function used to confirm the user's bet. Will return a bet amount.
 def confirmBet(money, betAmount):
     confirmBet = "n"
 
     while True:
         confirmBet = input("\nConfirm bet (y/n)?: ")
 
-        # if the bet is confirmed, return the tuple of money and betAmount
+        # if the bet is confirmed, break the loop
         if (confirmBet.lower() == "y"):
             break
         elif (confirmBet.lower() == "n"):
@@ -214,7 +217,7 @@ def confirmBet(money, betAmount):
                     betAmount = getUserBet(money)
                     break
                 elif (newBet.lower() == "n"):
-                    # If user doesn't want to place a new bet, set the betAmount to 0 and return the resultant tuple
+                    # If user doesn't want to place a new bet, set the betAmount to 0. This will end the game once passed to main
                     betAmount = 0
                     return betAmount
                 else:

@@ -1,3 +1,7 @@
+# CP1855 - Course Project
+# Marcus Hutchings - 20048535
+# July 14, 2021
+
 import random
 import db
 
@@ -45,7 +49,7 @@ def checkForAce(card, user, score):
         if (user == "player"):
             while True:
                 try:
-                    aceChoice = int(input("\nYou were dealt an ace. 1 or 11?: "))
+                    aceChoice = int(input("\nYou were dealt an Ace. Choose value (1 or 11?): "))
                 except ValueError:
                     print("Invalid integer number. Try again!")
                     continue
@@ -92,13 +96,14 @@ def processTurn(hand, deck, user, playerPoints, dealerPoints):
         showHand(hand, user)
 
         while True:
-            # Ask player if they would like to hit (add more cards) or stand (no more cards)
-            hitOrStand = input("\nHit or stand? (hit/stand): ")
-            if (hitOrStand.lower() != "hit") and (hitOrStand.lower() != "stand"):
-                print("Invalid input. Try again!")
-                continue
-            else:
-                break
+            # Ask player if they would like to hit (add more cards) or stand (no more cards). Don't ask if they have Blackjack (21 points).
+            if(playerPoints < 21):
+                hitOrStand = input("\nHit or stand? (hit/stand): ")
+                if (hitOrStand.lower() != "hit") and (hitOrStand.lower() != "stand"):
+                    print("Invalid input. Try again!")
+                    continue
+                else:
+                    break
 
         #while loop to handle player's turn. Will continue until the player's score is <= 21 or the player "hits" for more cards
         while (playerPoints <= 21) and (hitOrStand.lower() == "hit"):
@@ -137,6 +142,8 @@ def determineResult(playerPoints, dealerPoints, money, betAmount):
             if((playerPoints > dealerPoints) or (dealerPoints > 21)):
                 if (playerPoints == 21):
                     print("\nBlackjack! You win!")
+                elif (dealerPoints > 21):
+                    print("\nDealer busted! You win!")
                 else:
                     print("\nYou win.")
                 # update the account balance (money) by calling the processWin function from db.py
@@ -152,7 +159,7 @@ def determineResult(playerPoints, dealerPoints, money, betAmount):
             elif (dealerPoints > playerPoints):
                 # if dealer has more points and neither has busted, player loses
                 if (dealerPoints == 21):
-                    print("\nSorry, the dealer has Blackjack! You lose!")
+                    print("\nDealer has Blackjack! Sorry, you lose.")
                 else:
                     print("\nSorry. You lose.")
     else: #If player has busted or the dealerPoints are greater than the player's points, player loses

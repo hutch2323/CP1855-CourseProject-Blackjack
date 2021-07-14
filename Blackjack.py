@@ -1,3 +1,7 @@
+# CP1855 - Course Project
+# Marcus Hutchings - 20048535
+# July 14, 2021
+
 import card
 import db
 
@@ -48,8 +52,10 @@ def playBlackjack(deckOfCards, money, betAmount):
 def userBet(money):
     # Tuple used to hold a validation value (whether or not minimum balance is achieved - 0 for < minimum, 1 for >= minimum)
     # and the updated balance (if funds added - otherwise, just returns same money value)
-    betAmount = 0
     validatedBalanceTuple = db.checkForMinimumBalance(money)
+
+    # Initialize the betAmount to 0
+    betAmount = 0
     
     # Check to see if minimum balance is greater than 5
     if (validatedBalanceTuple[0] == 1):
@@ -91,8 +97,10 @@ def displayBetSlip(money, betAmount):
 
 def displayTitle():
     # Display game title and the betting odds
+    print("################################")
     print("BLACKJACK!")
     print("Blackjack payout is 3:2")
+    print("################################")
     
 
 def main():
@@ -122,7 +130,7 @@ def main():
         betAmount = betResult[1]
 
         # Check to see if the deck should be reshuffled before the turn begins. Will only reshuffle if less than half of original deck remaining
-        card.checkForReshuffle(deckOfCards)
+        deckOfCards = card.checkForReshuffle(deckOfCards)
 
         # Initiate the Blackjack game
         playBlackjack(deckOfCards, money, betAmount)
